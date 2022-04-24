@@ -1,2 +1,3 @@
 # bart.bot
-anything you can do, i can do better
+a discord bot programmed with spite
+> anything you can do, i can do better
