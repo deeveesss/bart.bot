@@ -1,2 +1,2 @@
 # bart.bot
-node js discord bot
+anything you can do, i can do better
