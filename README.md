@@ -6,7 +6,7 @@ runs on node.js, utlizing the discord.js library
 hosted on debian 11 (bullseye) OS via AWS
 
 spoodfeed for installing node on debian:
-```
+```shell
 su -
 curl -fsSL https://deb.nodesource.com/setup_17.x | bash -
 apt-get install -y nodejs
