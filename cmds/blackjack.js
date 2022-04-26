@@ -88,6 +88,7 @@ module.exports = {
           // ...
         }
       }
+      
       // bust
       else if (ptotal > 21 || dtotal > 21) {
         buttonArr.forEach(btn => btn.setDisabled())
@@ -102,7 +103,7 @@ module.exports = {
         client.games.delete(interaction.user.id);
       }
 
-      // if standing
+      // standing
       else if (game.pstand === 1) {
         buttonArr.forEach(btn => btn.setDisabled())
         if (dtotal > 16) game.dstand = 1; //lol ai
@@ -126,6 +127,7 @@ module.exports = {
           // ...
         }
       }
+      
       console.log(`dealer: (${dtotal}) ${dhand} ${game.dstand === 1 ? "[STAND]" : ""}\nplayer: (${ptotal}) ${phand}`);
       interaction.fetchReply().then(reply =>  reply.edit({ embeds: [richEmbed], components: [buttons] }) );
     }
