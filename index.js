@@ -1,6 +1,6 @@
 // initialize bot client instance
 const { Client, Collection, Intents } = require('discord.js');
-const { token, prefix, devId } = require('./config.json');
+const { token } = require('./config.json');
 const client = new Client({ intents: [
   Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MEMBERS,
   Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MESSAGE_REACTIONS, ],
