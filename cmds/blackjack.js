@@ -67,9 +67,9 @@ module.exports = {
       calcHands();
       if (phand.length > 2 || game.pstand === 1) escButton.setDisabled();
 
-			let handPlayer = { name: `Player Hand (${ptotal})`, value: phand.join(""), inline: true }
-			let handDealer = { name: `Dealer Hand (${dtotal})`, value: dhand.join(""), inline: true }
-			let hideDealer = { name: `Dealer Hand (??)`, value: `${dhand[0]}❔?`, inline: true }
+      let handPlayer = { name: `Player Hand (${ptotal})`, value: phand.join(""), inline: true }
+      let handDealer = { name: `Dealer Hand (${dtotal})`, value: dhand.join(""), inline: true }
+      let hideDealer = { name: `Dealer Hand (??)`, value: `${dhand[0]}❔?`, inline: true }
       richEmbed.setFields([handPlayer, hideDealer])
 
       // blackjack
