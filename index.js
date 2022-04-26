@@ -34,42 +34,20 @@ client.on("messageUpdate", async (oldMessage, newMessage) => {
   });
 });
 //processing
+client.games = new Collection();
 client.on('interactionCreate', async interaction => {
-	if (interaction.isCommand()) {  
-    const command = client.commands.get(interaction.commandName);
-    if (!command) return;
-    try { await command.run(interaction, client); } 
-    catch (error) {
-      console.error(error);
-      await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
+  if (interaction.isButton()) interaction.deferUpdate();
+  if (interaction.isCommand()) {  
+  const command = client.commands.get(interaction.commandName);
+  if (!command) return;
+  try { await command.run(interaction, client); } 
+  catch (error) {
+    console.error(error);
+    await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
     }
   }
 });
-client.on("messageCreate", async message => {
-  if (message.partial) return;
-  if (message.author.bot) return;
-  if (!message.guild) return;
-  if (message.content.indexOf(prefix) !== 0) return;
-  const args = message.content.slice(prefix.length).trim().split(/ +/g);
-  const cmd  = args.shift().toLowerCase();
 
-  if (cmd === "generate") {
-    if (message.author.id !== devId) return;
-    let richEmbed = new MessageEmbed()
-      .setAuthor({ name: "Voice Creation Wizard"})
-      .setDescription("Use the options below to manage your voice channel.")
-      .setColor("BLUE");
-    let createButton = new MessageButton()
-      .setCustomId('vcmake').setLabel('Create').setStyle('PRIMARY');
-    let optsButton = new MessageButton()
-      .setCustomId('vcopts').setLabel('Options').setStyle('PRIMARY');
-    let dcButton = new MessageButton()
-      .setCustomId('vcdc').setLabel('Disconnect').setStyle('PRIMARY');
-    let buttons = new MessageActionRow()
-      .addComponents([createButton,optsButton,dcButton]);
-    await message.channel.send({ embeds: [richEmbed], components: [buttons] });
-  }
-});
 //login
 client.login(token);
 //process errors
