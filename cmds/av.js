@@ -16,7 +16,7 @@ module.exports = {
     let richEmbed = new MessageEmbed()
       .setAuthor({ name: member.user.tag, iconURL: avatar })
       .setImage(avatar)
-      .setColor("#bf8cff");
+      .setColor("#RED");
     await interaction.reply({ 
       embeds: [richEmbed]
     });
