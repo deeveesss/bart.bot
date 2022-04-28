@@ -21,7 +21,7 @@ module.exports = {
       .addField("Registered", `<t:${created}:f>\n_<t:${created}:R>_`, true)
       .addField("Connected", `<t:${joined}:f>\n_<t:${joined}:R>_`, true)
       .setFooter({ text: "ID " + member.user.id })
-      .setColor("#bf8cff")
+      .setColor("RED")
       .setTimestamp();
     await interaction.reply({ 
       embeds: [richEmbed]
