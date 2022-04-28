@@ -2,7 +2,7 @@
 a discord bot programmed with spite
 > anything you can do, i can do better
 
-runs on node.js, utlizing the discord.js library
+programmed with [node.js](https://github.com/nodejs/node), utlizing the [discord.js](https://github.com/discordjs/discord.js) library
 hosted on debian 11 (bullseye) OS via AWS
 
 spoodfeed for installing node on debian:
