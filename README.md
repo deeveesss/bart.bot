@@ -5,6 +5,8 @@ a discord bot programmed with spite
 programmed with [node.js](https://github.com/nodejs/node), utlizing the [discord.js](https://github.com/discordjs/discord.js) v13 library
 hosted on debian 11 (bullseye) OS via AWS
 
+this repo exists to showcase the barebones features of the production bot. expect end result from some of these to differ from Bartholomew
+
 spoodfeed for installing node on debian:
 ```shell
 # login as root
