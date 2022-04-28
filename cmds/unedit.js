@@ -2,22 +2,22 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
 const { MessageEmbed } = require('discord.js');
 
 module.exports = {
-	data: new SlashCommandBuilder()
-	  .setName("unedit")
+  data: new SlashCommandBuilder()
+    .setName("unedit")
     .setDescription("catch the last edited message"),
-	run: async (interaction, client) => {
+  run: async (interaction) => {
     let richEmbed = new MessageEmbed().setColor("RED").setAuthor({ name: "No edits found." });
-    const unedit = client.snoops.get(`edit-${interaction.channel.id}`);
-    if (!unedit) interaction.reply({ embeds: [richEmbed], ephemeral: true });
+    const unedit = await interaction.client.snoops.get(`edit-${interaction.channel.id}`);
+    if (!unedit) await interaction.reply({ embeds: [richEmbed], ephemeral: true });
     else {
       richEmbed
-        .setColor("GREEN")
+        .setColor("#bf8cff")
         .setAuthor({ name: unedit.author, iconURL: unedit.avatar })
         .setDescription(unedit.newcontent)
         .addField("Original", unedit.oldcontent)
-        .setFooter({ text: "goteem" })
+        .setFooter({ text: "Unedited" })
         .setTimestamp(unedit.createdAt);
-      interaction.reply({ embeds: [richEmbed] });
+      await interaction.reply({ embeds: [richEmbed] });
     }
-	},
+  },
 };
