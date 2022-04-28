@@ -11,7 +11,7 @@ module.exports = {
     if (!unedit) await interaction.reply({ embeds: [richEmbed], ephemeral: true });
     else {
       richEmbed
-        .setColor("#bf8cff")
+        .setColor("RED")
         .setAuthor({ name: unedit.author, iconURL: unedit.avatar })
         .setDescription(unedit.newcontent)
         .addField("Original", unedit.oldcontent)
