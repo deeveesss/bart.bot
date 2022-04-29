@@ -12,7 +12,7 @@ client.snoops = new Collection();
 client.buttons = new Collection();
 client.commands = new Collection();
 
-//load from files
+// load handles from dirs
 const fs = require('node:fs');
 
 const cmdFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
