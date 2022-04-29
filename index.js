@@ -6,7 +6,7 @@ const client = new Client({ intents: [
   Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MESSAGE_REACTIONS, ],
 });
 
-//snooping
+// various maps / collections
 client.games = new Collection();
 client.snoops = new Collection();
 client.buttons = new Collection();
@@ -28,7 +28,7 @@ for (const file of evtFiles) {
   else client.on(e.name, (...args) => e.run(...args, client));
 }
 
-//processing
+//processing interactions, possibly ship out to handler later
 client.on('interactionCreate', async interaction => {
   if (interaction.isCommand()) {
     const command = client.commands.get(interaction.commandName);
