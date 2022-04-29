@@ -14,22 +14,9 @@ module.exports = {
       .setDescription("wager for potential winnings")),
   run: async (interaction, client) => {
 
-    let game  = await client.games.get(interaction.user.id);
-    let arg   = await interaction.options;
-    let wager = game ? game.bet : Math.abs(arg.getInteger('bet'));
-    let richEmbed = new MessageEmbed()
-      .setAuthor({ name: "Peparing board..." })
-      .setDescription(game ? "Fetching game..." : "Shuffling deck...")
-      .setFooter({ text: "Initializing..." })
-      .setColor("RED");
-
-    let hitButton = new MessageButton().setCustomId('blackjackHit').setStyle('PRIMARY').setLabel('Hit');
-    let stdButton = new MessageButton().setCustomId('blackjackStd').setStyle('PRIMARY').setLabel('Stand');
-    let escButton = new MessageButton().setCustomId('blackjackEsc').setStyle('SECONDARY').setLabel('Cancel');
-    let buttonArr = [hitButton, stdButton, escButton]
-    let buttons   = new MessageActionRow().addComponents(buttonArr);
-
-    await interaction.reply({ embeds: [richEmbed] });
+    let phand = [], dhand = [], ptotal = 0, dtotal = 0;
+    let game  = client.games.get(interaction.user.id);
+    let wager = game ? game.bet : interaction.options.getInteger('bet');
 
     if (!game) {
       let playerHand = [], dealerHand = [];
@@ -38,18 +25,56 @@ module.exports = {
       dealerHand.push(shuffledDeck.pop());
       playerHand.push(shuffledDeck.pop());
       dealerHand.push(shuffledDeck.pop());
-      await client.games.set(interaction.user.id, {
+      client.games.set(interaction.user.id, {
         deck: shuffledDeck, bet: wager,
         dealer: dealerHand, player: playerHand,
         dstand: 0,          pstand: 0,
       });
-      game = await client.games.get(interaction.user.id);
+      game = client.games.get(interaction.user.id)
     }
 
-    let phand = [],
-        dhand = [],
-        ptotal = 0, 
-        dtotal = 0;
+    let richEmbed = new MessageEmbed()
+      .setAuthor({ name: "Peparing board..." })
+      .setDescription("Fetching deck...")
+      .setFooter({ text: "Initializing..." })
+      .setColor("RED");
+
+    const gameBoard = await interaction.reply({ embeds: [richEmbed], fetchReply: true });
+
+    let hitButton = new MessageButton().setCustomId('blackjackHit').setStyle('DANGER').setLabel('Hit');
+    let stdButton = new MessageButton().setCustomId('blackjackStd').setStyle('DANGER').setLabel('Stand');
+    let escButton = new MessageButton().setCustomId('blackjackEsc').setStyle('SECONDARY').setLabel('Cancel');
+    let buttonArr = [hitButton, stdButton, escButton]
+    let buttons   = new MessageActionRow().addComponents(buttonArr);
+
+    const btnFilter = presser => presser.user.id === interaction.user.id;
+    const btnListen = interaction.channel.createMessageComponentCollector({ btnFilter, time: 10000 });
+
+    btnListen.on('collect', i => {
+      i.deferUpdate();
+      if (i.customId === 'blackjackHit') { 
+        game.player.push(game.deck.pop());
+        checkHands();
+        btnListen.resetTimer();
+      }
+      if (i.customId === 'blackjackStd') { 
+        game.pstand = 1;
+        checkHands();
+      }
+      if (i.customId === 'blackjackEsc') {
+        client.games.delete(interaction.user.id);
+        btnListen.stop();
+      }
+    });
+
+    btnListen.on('end', () => gameBoard.edit({ components: [] }) );
+
+    function updateGame() {
+      buttons = null;
+      gameBoard.edit({ embeds: [richEmbed], components: [] });
+      client.games.delete(interaction.user.id);
+      btnListen.stop();
+    }
 
     function calcHands() {
       phand = [], dhand = [], dtotal = 0, ptotal = 0;
@@ -59,12 +84,12 @@ module.exports = {
       if (game.dealer.find(card => card.value === 1 ) && dtotal <= 11) dtotal += 10;
     }
 
-    function doRound() {
+    function checkHands() {
 
       calcHands();
       if (phand.length > 2 || game.pstand === 1) escButton.setDisabled();
 
-      let hideDealer = { name: `Dealer Hand (??)`, value: `${dhand[0]}**\\❔?**`, inline: false },
+      let hideDealer = { name: `Dealer Hand (??)`, value: `${dhand[0]}**\\??**`, inline: false },
           handDealer = { name: `Dealer Hand (${dtotal})`, value: dhand.join(""), inline: false },
           handPlayer = { name: `Player Hand (${ptotal})`, value: phand.join(""), inline: false },
           betWasJack = { name: `Winnings`, value: `${Math.floor(wager * 1.666667)}`, inline: false },
@@ -73,15 +98,14 @@ module.exports = {
           betWasNull = { name: `Bet Reclaimed`, value: `${wager}`, inline: false };
 
       richEmbed
-      .setFields([hideDealer, handPlayer])
-      .setAuthor({ name: "Well, go on then!" })
-      .setDescription("What'll it be?")
-      .setFooter({ text: "Blackjack" })
-      .setTimestamp();
+        .setFields([hideDealer, handPlayer])
+        .setAuthor({ name: "Well, go on then!" })
+        .setDescription("What'll it be?")
+        .setFooter({ text: "Blackjack" })
+        .setTimestamp();
 
       // blackjack
       if ((ptotal === 21 && game.player.length === 2) || (dtotal === 21 && game.dealer.length === 2)) {
-        buttonArr.forEach(btn => btn.setDisabled());
         if (dtotal === ptotal) {
           richEmbed
             .setAuthor({ name: "It's a draw!" })
@@ -106,16 +130,15 @@ module.exports = {
           if (wager > 0) richEmbed.setFields([betWasLose, handDealer, handPlayer]);
           // ...
         }
-        client.games.delete(interaction.user.id);
+        updateGame();
       }
 
       // bust
       else if (ptotal > 21 || dtotal > 21) {
-        buttonArr.forEach(btn => btn.setDisabled())
         if (ptotal > 21) {
           richEmbed
             .setAuthor({ name: "Busted! You lose!" })
-            .setDescription("Hmm... not today.")
+            .setDescription("Hnmm... not today.")
             .setFields([handDealer, handPlayer]);
           if (wager > 0) richEmbed.setFields([betWasLose, handDealer, handPlayer]);
           // ...
@@ -128,65 +151,56 @@ module.exports = {
           if (wager > 0) richEmbed.setFields([betWasWins, handDealer, handPlayer]);
           // ...
         }
-        client.games.delete(interaction.user.id);
+        updateGame();
       }
 
       // stand
       else if (game.pstand === 1) {
-        buttonArr.forEach(btn => btn.setDisabled())
         if (dtotal > 16) game.dstand = 1; //lol ai
         if (game.dstand === 0) {
           game.dealer.push(game.deck.pop());
-          doRound();
+          checkHands();
         }
-        else if (ptotal === dtotal) {
-          richEmbed
-            .setAuthor({ name: "It's a draw!" })
-            .setDescription("No winners today.")
-            .setFields([handDealer, handPlayer]);
-          if (wager > 0) richEmbed.setFields([betWasNull, handDealer, handPlayer]);
-          client.games.delete(interaction.user.id);
-          // ...
-        }
-        else if (ptotal > dtotal) {
-          richEmbed
-            .setAuthor({ name: "You win!" })
-            .setDescription("Don't have to rub it in.")
-            .setFields([handDealer, handPlayer]);
-          if (wager > 0) richEmbed.setFields([betWasWins, handDealer, handPlayer]);
-          client.games.delete(interaction.user.id);
-          // ...
-        }
-        else if (ptotal < dtotal) {
-          richEmbed
-            .setAuthor({ name: "You lose!" })
-            .setDescription("Haha! Loser!")
-            .setFields([handDealer, handPlayer]);
-          if (wager > 0) richEmbed.setFields([betWasLose, handDealer, handPlayer]);
-          client.games.delete(interaction.user.id);
-          // ...
+        else {
+          if (ptotal === dtotal) {
+            richEmbed
+              .setAuthor({ name: "It's a draw!" })
+              .setDescription("No winners today.")
+              .setFields([handDealer, handPlayer]);
+            if (wager > 0) richEmbed.setFields([betWasNull, handDealer, handPlayer]);
+            // ...
+          }
+          else if (ptotal > dtotal) {
+            richEmbed
+              .setAuthor({ name: "You win!" })
+              .setDescription("Don't be rude.")
+              .setFields([handDealer, handPlayer]);
+            if (wager > 0) richEmbed.setFields([betWasWins, handDealer, handPlayer]);
+            // ...
+          }
+          else if (ptotal < dtotal) {
+            richEmbed
+              .setAuthor({ name: "You lose!" })
+              .setDescription("Haha! Loser!")
+              .setFields([handDealer, handPlayer]);
+            if (wager > 0) richEmbed.setFields([betWasLose, handDealer, handPlayer]);
+            // ...
+          }
+          updateGame();
         }
       }
-      setTimeout(() => { interaction.fetchReply().then(reply =>  reply.edit({ embeds: [richEmbed], components: [buttons] }) )}, 100);
+      else if (ptotal === 21) { 
+        game.pstand = 1; checkHands();
+      }
+
+      // hit & no bust or wins
+      else {
+        gameBoard.edit({ embeds: [richEmbed], components: [buttons] });
+      }
     }
 
-    doRound();
-
-    const btnFilter = presser => presser.user.id === interaction.user.id;
-    const btnListen = await interaction.channel.createMessageComponentCollector({ btnFilter, time: 10000 });
-    btnListen.on('collect', i => {
-      if (i.customId === 'blackjackHit') { btnListen.resetTimer(); game.player.push(game.deck.pop()); doRound(); }
-      if (i.customId === 'blackjackStd') { game.pstand = 1; doRound(); }
-      if (i.customId === 'blackjackEsc') {
-        richEmbed.setDescription("Game cancelled.");
-        client.games.delete(interaction.user.id);
-        btnListen.stop();
-      }
-    });
-    btnListen.on('end', () => {
-      interaction.fetchReply().then(reply =>  reply.edit({ embeds: [richEmbed], components: [] }) );
-    });
-
+    // run for initial command
+    checkHands();
   },
 };
 
