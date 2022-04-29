@@ -20,17 +20,17 @@ module.exports = {
 
     if (!game) {
       let playerHand = [], dealerHand = [];
-      let shuffledDeck = shuffle(shuffle(shuffle(cards)));
-      playerHand.push(shuffledDeck.pop());
-      dealerHand.push(shuffledDeck.pop());
-      playerHand.push(shuffledDeck.pop());
-      dealerHand.push(shuffledDeck.pop());
-      client.games.set(interaction.user.id, {
-        deck: shuffledDeck, bet: wager,
+      let newDeck = [].concat(cards);
+      shuffle(shuffle(shuffle(shuffle(newDeck))));
+      playerHand.push(newDeck.pop(), newDeck.pop());
+      dealerHand.push(newDeck.pop(), newDeck.pop());
+      await client.games.set(interaction.user.id, {
+        deck: newDeck, bet: wager,
         dealer: dealerHand, player: playerHand,
         dstand: 0,          pstand: 0,
       });
-      game = client.games.get(interaction.user.id)
+      game = await client.games.get(interaction.user.id);
+      console.log(newDeck.length);
     }
 
     let richEmbed = new MessageEmbed()
