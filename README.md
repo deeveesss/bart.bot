@@ -6,7 +6,7 @@ programmed with [node.js](https://github.com/nodejs/node), utlizing the [discord
 hosted on debian 11 (bullseye) OS via AWS
 
 this repo exists to showcase the barebones features of the production bot. expect end result from some of these to differ from Bartholomew
-
+### installing node
 spoodfeed for installing node on debian:
 ```shell
 # login as root
@@ -19,6 +19,7 @@ exit
 # install dependencies
 npm install discord-api-types discord.js @discordjs/builders @discordjs/rest shuffle-array
 ```
+### tracing errors
 newbie here learning? add these to the bottom of your index file to trace errors.
 ```javascript
 process.on("uncaughtException", (error) => {
