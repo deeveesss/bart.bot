@@ -19,3 +19,11 @@ exit
 # install dependencies
 npm install discord-api-types discord.js @discordjs/builders @discordjs/rest shuffle-array
 ```
+newbie here learning? add these to the bottom of your index file to trace errors.
+```javascript
+process.on("uncaughtException", (error) => {
+  console.log("Exception Error: " + error) 
+});
+process.on("unhandledRejection", (reason, promise) => {
+  console.log("Promise Error: ", promise, " info: ", reason.message)
+});```
