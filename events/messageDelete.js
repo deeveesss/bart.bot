@@ -1,6 +1,6 @@
 module.exports = {
   name: 'messageDelete',
-  run(message, client) {
+  async run (message, client) {
     if (message.author.bot) return;
     let attached = "";
     if (message.attachments.size >= 1) { message.attachments.forEach(file => { attached += `[Attachment](${file.url}\n)` }) }
