@@ -1,6 +1,6 @@
 module.exports = {
   name: 'messageUpdate',
-  run(oldMessage, newMessage, client) {
+  async run (oldMessage, newMessage, client) {
     if (newMessage.author.bot) return;
     if (oldMessage.content.toString() === newMessage.content.toString()) return;
     client.snoops.set(`edit-${newMessage.channel.id}`, {
