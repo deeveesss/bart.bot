@@ -23,16 +23,16 @@ module.exports = {
 
     switch (difficulty) {
       default:
-        for (const e of words) if (e.word.length <= 5) scrambleDictionary.push(e);
+        for (const e of words) if (e.length <= 5) scrambleDictionary.push(e);
         break;
       case 1:
-        for (const e of words) if (e.word.length >= 4 && e.word.length <= 6) scrambleDictionary.push(e);
+        for (const e of words) if (e.length >= 4 && e.length <= 6) scrambleDictionary.push(e);
         break;
       case 2:
-        for (const e of words) if (e.word.length >= 5 && e.word.length <= 8) scrambleDictionary.push(e); 
+        for (const e of words) if (e.length >= 5 && e.length <= 8) scrambleDictionary.push(e); 
         break;
       case 3:
-        for (const e of words) if (e.word.length >= 7) scrambleDictionary.push(e); 
+        for (const e of words) if (e.length >= 7) scrambleDictionary.push(e); 
         break;
     }
 // shuffle the list and grab first object,
