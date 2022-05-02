@@ -64,8 +64,7 @@ module.exports = {
     msgListen.on('end', () => {
       richEmbed
         .setAuthor({ name: "Unscramble! Round ended!" })
-        .setDescription(`No winners!\nThe word was:\n` + word)
-        .setFields([{ name: `Definition(s)`, value: def, inline: false }]);
+        .setDescription(`No winners!\nThe word was:\n` + word);
       if (winner !== null) richEmbed.setDescription(`${winner} guessed the word and won!\nThe word was:\n` + word)
       scrambleBoard.edit({ embeds: [richEmbed] })
     });
