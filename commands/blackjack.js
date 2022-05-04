@@ -1,7 +1,5 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { MessageEmbed, MessageActionRow, MessageButton } = require('discord.js');
-//const { Database } = require("@devsnowflake/quick.db");
-//const db = new Database("../json.db");
 const shuffle = require("shuffle-array");
 const cards = require("../objects/cards.json");
 
