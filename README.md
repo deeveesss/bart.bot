@@ -29,3 +29,12 @@ process.on("unhandledRejection", (reason, promise) => {
   console.log("Promise Error: ", promise, " info: ", reason.message)
 });
 ```
+### better-sqlite3
+spoonfeed for installing [better-sqlite3](https://github.com/JoshuaWise/better-sqlite3) on debian:
+```shell
+# install compilers and python
+sudo apt-get install build-essential
+sudo apt-get install python
+# install better-sqlite3 and dependency
+npm install node-gyp better-sqlite3
+```
