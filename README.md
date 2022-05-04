@@ -30,7 +30,7 @@ exit
 npm install discord-api-types discord.js @discordjs/builders @discordjs/rest shuffle-array
 ```
 ### better-sqlite3
-spoonfeed for installing [better-sqlite3](https://github.com/JoshuaWise/better-sqlite3) on debian:
+spoonfeed for installing [better-sqlite3](https://github.com/JoshuaWise/better-sqlite3) (optional persistent db) on debian:
 ```shell
 # install compilers and python
 sudo apt-get install build-essential
