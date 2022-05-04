@@ -1,9 +1,11 @@
 // initialize bot client instance
-const { Client, Collection, Intents, MessageActionRow, MessageButton, MessageEmbed } = require('discord.js');
-const { token, prefix, devId } = require('./config.json');
+const { Client, Collection, Intents } = require('discord.js');
+const { token } = require('./config.json');
 const client = new Client({ intents: [
-  Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MEMBERS,
-  Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MESSAGE_REACTIONS, ],
+  Intents.FLAGS.GUILDS, 
+  Intents.FLAGS.GUILD_MEMBERS,
+  Intents.FLAGS.GUILD_MESSAGES, 
+  Intents.FLAGS.GUILD_MESSAGE_REACTIONS, ],
 });
 
 // various maps / collections
@@ -16,39 +18,23 @@ client.commands = new Collection();
 const fs = require('node:fs');
 
 const cmdFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
-for (const file of cmdFiles) { const command = require(`./commands/${file}`); client.commands.set(command.data.name, command) }
+for (const file of cmdFiles) {
+  const command = require(`./commands/${file}`);
+  client.commands.set(command.data.name, command)
+}
 
 const btnFiles = fs.readdirSync('./buttons').filter(file => file.endsWith('.js'));
-for (const file of btnFiles) { const button = require(`./buttons/${file}`); client.buttons.set(button.name, button) }
+for (const file of btnFiles) {
+  const button = require(`./buttons/${file}`);
+  client.buttons.set(button.name, button)
+}
 
 const evtFiles = fs.readdirSync('./events').filter(file => file.endsWith('.js'));
 for (const file of evtFiles) {
-  const e = require(`./events/${file}`);
-  if (e.once) client.once(e.name, (...args) => e.run(...args));
-  else client.on(e.name, (...args) => e.run(...args, client));
+  const event = require(`./events/${file}`);
+  if (event.once) client.once(event.name, (...args) => event.run(...args));
+  else client.on(event.name, (...args) => event.run(...args, client));
 }
-
-//processing interactions, possibly ship out to handler later
-client.on('interactionCreate', async interaction => {
-  if (interaction.isCommand()) {
-    const command = client.commands.get(interaction.commandName);
-    if (!command) return;
-    try { await command.run(interaction, client); } 
-    catch (error) {
-      console.error(error);
-      await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
-    }
-  }
-  if (interaction.isButton()) {
-    const button = client.buttons.get(interaction.customId);
-    if (!button) return;
-    try { await button.run(interaction, client); } 
-    catch (error) {
-      console.error(error);
-      await interaction.reply({ content: 'There was an error while executing this button!', ephemeral: true });
-    } 
-  }
-});
 
 //login
 client.login(token);
